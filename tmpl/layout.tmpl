@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Multi-page template</title>
+  <title>Golang photo archive on Bluemix</title>
 
   <link rel="stylesheet" href="../themes/bluemixtheme.min.css">
   <link rel="stylesheet" href="../themes/jquery.mobile.icons.min.css">
@@ -19,38 +19,44 @@
 
   <link rel="shortcut icon" href="favicon.ico">
   <script src="../js/jquery.min.js"></script>
-
+  <script src="../js/detectmobilebrowser.js"></script>
   <script src="../js/jquery.mobile-1.4.5.min.js"></script>
   <script src="../js/scooch.min.js"></script>
+
 </head>
 
 <body>
 
 <div data-role="page" data-theme="f">
 
-  <div data-role="header" >
+  <div data-role="header" data-position="fixed" >
     <h1>My Photos</h1>
-    <a id='myheader' href="#albums" data-icon="bars" data-iconpos="notext">Albums</a>
+    <a id='mainheader' href="/" data-icon="bars" onclick="barclicked(); return true" data-iconpos="notext">Albums</a>
 
   </div><!-- /header -->
 
-<div data-role="panel" data-display="overlay" id="albums">
-  <div data-role="header" >
-    <h1>Albums</h1>
-  </div>
-  <a href="#myheader" data-rel="close">Close panel</a>
-</div><!-- /panel -->
 
 
   <div role="main" class="ui-content" >
     {{yield}}
   </div><!-- /content -->
 
-  <div data-role="footer">
-    <h4>Footer content</h4>
+  <div data-role="footer"  data-position="fixed"  data-tap-toggle="false">
+    <h4>Golang on Bluemix</h4>
   </div><!-- /footer -->
 
 </div><!-- /page -->
+<script>
+function barclicked() {
+  if ($('#mainheader').attr('href') == '/upload') {
+     $('#mainheader').attr('href', '/');
 
+  } else {
+     $('#mainheader').attr('href', '/upload');
+
+  }
+}
+
+</script>
 </body>
 </html>
