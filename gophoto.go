@@ -12,6 +12,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 const (
@@ -21,28 +22,6 @@ const (
 	CREDS_ENV       = "V2CREDS"
 	UPLOAD_DISABLED = "UPDISABLE"
 )
-
-func getpic(res io.Writer, filename string) error {
-	c := swift.Connection{
-		UserName: "test:tester",
-		ApiKey:   "testing",
-		AuthUrl:  "http://127.0.0.1:12345/auth/v1.0",
-	}
-
-	// Authenticate
-	err2 := c.Authenticate()
-	if err2 != nil {
-		return err2
-	}
-
-	_, err := c.ObjectGet("myphotos", filename+".jpg", res, false, nil)
-
-	if err != nil {
-		return err
-	}
-	return nil
-
-}
 
 type ObjStoreV2Info struct {
 	Authurl     string                `json:"auth_url"`
@@ -100,7 +79,7 @@ func sendTempfileToArchive(tmpfilename string, archivefilename string, authentic
 		return err
 	}
 
-	err2 := authenticated.ObjectPutBytes(albumfolder, archivefilename, bytearray, "image-jpeg")
+	err2 := authenticated.ObjectPutBytes(albumfolder, strings.ToLower(archivefilename), bytearray, "image-jpeg")
 	if err2 != nil {
 		log.Printf("Failed to send temp file to archive - %v", err2)
 		return err2
@@ -182,49 +161,10 @@ func main() {
 		panic(err2)
 	}
 
-	m.Get("/try2", func(res http.ResponseWriter, req *http.Request) {
-		clreq, err := http.NewRequest("GET", authurl+"/firstuser", nil)
-		clreq.SetBasicAuth(username, password)
-		cli := &http.Client{}
-		clresp, err := cli.Do(clreq)
-
-		if err != nil {
-			log.Printf("Error fetching crendentials: %v\n", err.Error())
-			panic(err)
-		}
-
-		fmt.Fprintf(res, "completed successfully.<br>%s<br>", clresp)
-
-	})
-
-	m.Get("/create", func(res http.ResponseWriter, req *http.Request) {
-
-		containers, err := c.ContainersAll(nil)
-		if err != nil {
-			log.Printf("container list error: ", err)
-			panic(err)
-		}
-		if len(containers) == 0 {
-			log.Printf("no container, creating one")
-			fmt.Fprintf(res, "no container, creating one<br>")
-			err = c.ContainerCreate(albumfolder, nil)
-			if err != nil {
-				log.Printf("contaienr create error: ", err)
-				panic(err)
-			}
-		} else {
-			log.Printf("container already exists")
-			fmt.Fprintf(res, "container already exists<br>")
-		}
-
-		fmt.Fprintf(res, "completed successfully.<br>")
-
-	})
-
 	m.Use(render.Renderer(render.Options{
-		Directory: "tmpl",   // Specify what path to load the templates from.
-		Layout:    "layout", // Specify a layout template. Layouts can call {{ yield }} to render the current template.
-		Charset:   "UTF-8",  // Sets encoding for json and html content-types.
+		Directory: "tmpl",
+		Layout:    "layout",
+		Charset:   "UTF-8",
 		Funcs: []template.FuncMap{
 			{"getPhotoNames": func() template.HTML {
 
@@ -262,11 +202,40 @@ func main() {
 			r.HTML(200, "uploaddisabled", "")
 		})
 
-	} else {
+	} else { // completely disable uplaod
 		m.Get("/upload", func(r render.Render) {
 			fmt.Printf("%v\n", "g./upload")
 			r.HTML(200, "upload", "")
 		})
+
+		m.Post("/up", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Printf("%v\n", "p./up")
+
+			file, header, err := r.FormFile("fileToUpload")
+
+			defer file.Close()
+
+			if err != nil {
+				fmt.Fprintln(w, err)
+				return
+			}
+
+			tmpFilename, err := readPhotoToTempfile(file)
+
+			if err != nil {
+				fmt.Fprint(w, err)
+				return
+			}
+
+			err2 := sendTempfileToArchive(tmpFilename, header.Filename, c)
+
+			if err2 != nil {
+				fmt.Fprintln(w, err2)
+				return
+			}
+			http.Redirect(w, r, "/", 302)
+		})
+
 	}
 
 	m.Get("/", func(r render.Render) {
@@ -275,43 +244,12 @@ func main() {
 	})
 
 	m.Get("/pic/:who.jpg", func(args martini.Params, res http.ResponseWriter, req *http.Request) {
-		// res.Header().Set("Content-Type", "image/jpeg")
 
 		_, err3 := c.ObjectGet(albumfolder, args["who"]+".jpg", res, false, nil)
 
 		if err3 != nil {
 			res.WriteHeader(500)
 		}
-	})
-
-	m.Post("/up", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Printf("%v\n", "p./up")
-
-		file, header, err := r.FormFile("fileToUpload")
-
-		defer file.Close()
-
-		if err != nil {
-			fmt.Fprintln(w, err)
-			return
-		}
-
-		tmpFilename, err := readPhotoToTempfile(file)
-
-		if err != nil {
-			fmt.Fprint(w, err)
-			return
-		}
-
-		err2 := sendTempfileToArchive(tmpFilename, header.Filename, c)
-
-		if err2 != nil {
-			fmt.Fprintln(w, err2)
-			return
-		}
-
-		http.Redirect(w, r, "/", 302)
-
 	})
 
 	m.RunOnAddr(runhost + ":" + runport)

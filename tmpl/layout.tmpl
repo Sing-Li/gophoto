@@ -4,6 +4,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
   <title>Golang photo archive on Bluemix</title>
 
   <link rel="stylesheet" href="../themes/bluemixtheme.min.css">
@@ -47,6 +50,10 @@
 
 </div><!-- /page -->
 <script>
+if(navigator.userAgent.match(/Android/i)){
+    window.scrollTo(0,1);
+}
+
 function barclicked() {
   if ($('#mainheader').attr('href') == '/upload') {
      $('#mainheader').attr('href', '/');
