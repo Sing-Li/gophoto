@@ -15,6 +15,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -82,9 +83,10 @@ func sendTempfileToArchive(tmpfilename string, archivefilename string, authentic
 	}
 
 	targetFilename := strings.ToLower(archivefilename)
+	randgen := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	if targetFilename == "image.jpg" {
-		targetFilename = "image_" + strconv.Itoa(rand.Intn(1000000)+1) + ".jpg"
+		targetFilename = "image_" + strconv.Itoa(randgen.Intn(1000000)+1) + ".jpg"
 	}
 	err2 := authenticated.ObjectPutBytes(albumfolder, targetFilename, bytearray, "image-jpeg")
 	if err2 != nil {
