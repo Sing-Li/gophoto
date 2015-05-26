@@ -2,13 +2,8 @@
 <!-- disable ajax to make form upload work properly -->
 <form  id="upform" action="up" method="post" data-ajax="false" enctype="multipart/form-data">
     Select JPG image to upload:
-    <input type="file" name="fileToUpload" id="fileToUpload" accept="image/jpeg" required>
+    <input type="file" name="fileToUpload" id="fileToUpload" accept="image/jpeg" required="required">
     <input type="submit" value="Upload Image" name="submit">
 </form>
-<script>
- $('upform').submit(function () {
 
-
- })
-</script>
 
