@@ -52,12 +52,15 @@ type ObjStoreCredentials struct {
 	Globaluri string `json:"global_account_auth_uri"`
 }
 
+var randgen = rand.New(rand.NewSource(time.Now().UnixNano()))
+
 func readPhotoToTempfile(file io.Reader) (string, error) {
 	out, err := ioutil.TempFile("", "gophoto-") //os.Create("/tmp/file")
 	if err != nil {
 		log.Printf("Failed to open temp file for writing - %v", err)
 		return "", err
 	}
+
 	tmpFilename := out.Name()
 
 	defer out.Close()
@@ -83,7 +86,6 @@ func sendTempfileToArchive(tmpfilename string, archivefilename string, authentic
 	}
 
 	targetFilename := strings.ToLower(archivefilename)
-	randgen := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	if targetFilename == "image.jpg" {
 		targetFilename = "image_" + strconv.Itoa(randgen.Intn(1000000)+1) + ".jpg"
