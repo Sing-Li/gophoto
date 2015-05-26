@@ -10,8 +10,10 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -79,7 +81,12 @@ func sendTempfileToArchive(tmpfilename string, archivefilename string, authentic
 		return err
 	}
 
-	err2 := authenticated.ObjectPutBytes(albumfolder, strings.ToLower(archivefilename), bytearray, "image-jpeg")
+	targetFilename := strings.ToLower(archivefilename)
+
+	if targetFilename == "image.jpg" {
+		targetFilename = "image_" + strconv.Itoa(rand.Intn(1000000)+1) + ".jpg"
+	}
+	err2 := authenticated.ObjectPutBytes(albumfolder, targetFilename, bytearray, "image-jpeg")
 	if err2 != nil {
 		log.Printf("Failed to send temp file to archive - %v", err2)
 		return err2
