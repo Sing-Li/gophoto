@@ -169,7 +169,7 @@ func main() {
 	err2 := c.Authenticate()
 	if err2 != nil {
 		log.Printf("authenticate error: ", err2)
-		panic(err2)
+		// panic(err2)
 	}
 
 	m.Use(render.Renderer(render.Options{
