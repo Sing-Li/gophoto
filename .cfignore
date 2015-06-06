@@ -1,1 +1,4 @@
 Dockerfile
+*.jpg
+.DS_Store
+.git
