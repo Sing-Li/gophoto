@@ -12,6 +12,7 @@ You can manage your uploaded photos using the IBM Cloud Management console (base
 
 ![IBM Cloud Management console displaying a folder of objects under the Object Storage v2 service](http://www.ibm.com/developerworks/cloud/library/cl-golang-photo-archive-bluemix/figure3.png)
 
+Try out [gophoto hosted on Bluemix](http://gophoto.mybluemix.net/) now.
 
 Read the [tutorial and see the screencast](http://www.ibm.com/developerworks/cloud/library/cl-golang-photo-archive-bluemix/index.html).
 
