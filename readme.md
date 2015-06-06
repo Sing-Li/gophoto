@@ -10,7 +10,7 @@ Then deploy your app in the IBM Bluemix cloud, and have your photos archived pri
 
 You can manage your uploaded photos using the IBM Cloud Management console (based on OpenStack Horizon).
 
-![IBM Cloud Management console displaying a folder of objects under the Object Storage v2 service](http://www.ibm.com/developerworks/cloud/library/cl-golang-photo-archive-bluemix/figure2.png)
+![IBM Cloud Management console displaying a folder of objects under the Object Storage v2 service](http://www.ibm.com/developerworks/cloud/library/cl-golang-photo-archive-bluemix/figure3.png)
 
 
 Read the [tutorial and see the screencast](http://www.ibm.com/developerworks/cloud/library/cl-golang-photo-archive-bluemix/index.html).
